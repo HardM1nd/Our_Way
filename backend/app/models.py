@@ -114,3 +114,31 @@ class Targets(models.Model):
 
     def __str__(self):
         return self.name
+
+class Character(models.Model):
+    name = models.CharField(max_length=100)
+    hero_class = models.CharField(max_length=50)
+    level = models.PositiveIntegerField(default=1)
+    experience = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-level', 'experience']
+
+    @property
+    def next_level_exp(self):
+        # простая формула: 100 * (level ^ 1.5)
+        return int(100 * (self.level ** 1.5))
+
+    def gain_experience(self, amount: int):
+        if amount < 0:
+            raise ValueError("amount must be non-negative")
+        self.experience += amount
+        leveled_up = False
+        while self.experience >= self.next_level_exp:
+            self.experience -= self.next_level_exp
+            self.level += 1
+            leveled_up = True
+        self.save()
+        return leveled_up
