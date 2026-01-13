@@ -1,6 +1,3 @@
-"""
-API namespace for achievements app (optional, can be used for custom endpoints).
-"""
 from rest_framework.routers import DefaultRouter
 from .views import AchievementViewSet, UserAchievementViewSet
 
