@@ -1,7 +1,9 @@
 from rest_framework.throttling import UserRateThrottle
-class BurstRateThrottle(UserRateThrottle): scope = 'burst'
-class SustainedRateThrottle(UserRateThrottle): scope = 'sustained'
-Add corresponding settings in REST_FRAMEWORK if you enable throttling:
+class BurstRateThrottle(UserRateThrottle):
+    scope = 'burst'
+class SustainedRateThrottle(UserRateThrottle): 
+    scope = 'sustained'
+#Add corresponding settings in REST_FRAMEWORK if you enable throttling:
 REST_FRAMEWORK = {
 'DEFAULT_THROTTLE_CLASSES': [
 'app.api.throttling.BurstRateThrottle',
@@ -12,4 +14,4 @@ REST_FRAMEWORK = {
 'sustained': '1000/day',
 }
 }
-________________________________________
+
