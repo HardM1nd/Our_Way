@@ -1,10 +1,5 @@
-# core/apps.py
-
 from django.apps import AppConfig
-
-class AppConfig(AppConfig):
-    name = "core"
-    verbose_name = "Core"
-
-    def ready(self):
-        import core.signals  # noqa: F401
+class CoreConfig(AppConfig): 
+    default_auto_field = 'django.db.models.BigAutoField' 
+    name = 'app.core'
+    verbose_name = 'Core'
