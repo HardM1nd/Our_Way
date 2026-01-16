@@ -1,6 +1,8 @@
-def slugify(value: str) -> str:
-    from django.utils.text import slugify as dj_slugify
-    return dj_slugify(value)
-
-def format_datetime(dt):
-    return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else ""
+import hashlib 
+import random 
+import string
+def generate_token(length=32): 
+    alphabet = string.ascii_letters + string.digits 
+    return ''.join(random.choice(alphabet) for _ in range(length))
+def hash_password(password: str) -> str: 
+    return hashlib.sha256(password.encode()).hexdigest()

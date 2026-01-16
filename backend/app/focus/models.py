@@ -24,7 +24,7 @@ class FocusMission(models.Model):
 class Meta:
         ordering = ['-due_date', 'title']
 
-    def __str__(self):
+def __str__(self):
         return f'{self.title} ({self.project.name})'
 
 class FocusMemberProgress(models.Model):
