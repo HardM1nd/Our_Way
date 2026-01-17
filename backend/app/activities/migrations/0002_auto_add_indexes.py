@@ -1,10 +1,11 @@
 from django.db import migrations, models
+
 class Migration(migrations.Migration):
-    #зависимость от прошлой миграции
+
     dependencies = [
         ('activities', '0001_initial'),
     ]
-    #выполняемые операции
+
     operations = [
         migrations.AddIndex(
             model_name='activity',
