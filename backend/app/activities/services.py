@@ -1,3 +1,11 @@
+from django.utils import timezone
+from app.core.services import NotificationService  # уже было
+# Добавим импорт уведомлений
+try:
+    from app.notifications.services import send_notification_to_user
+except Exception:
+    send_notification_to_user = None
+    
 from django.utils import timezone from .models import ActivityLog, ActivityReward, ActivityTimer from app.core.services import NotificationService from app.achivments.models import Achievement, UserAchievement from app.Focus.models import FocusExperience, FocusMemberProgress from app.Clans.models import ClanMember # for future clan-based rewards
 class ActivityService: @staticmethod def complete_activity(activity_log: ActivityLog, award_points: bool = True): if activity_log.status == 'completed': return activity_log activity_log.mark_completed(award_points=award_points) # create rewards (if any) for reward in activity_log.activity.rewards.filter(claimed=False): # by default mark points-type rewards as auto-claimed if reward.type == 'points': try: pts = int(reward.value) except Exception: pts = activity_log.points_awarded or activity_log.activity.points # notify user / increment profile points (example) NotificationService.send(activity_log.user, f'You gained {pts} points for completing {activity_log.activity.title}') reward.claimed = True reward.save() elif reward.type == 'achievement': # try create UserAchievement (if exists) try: ach = Achievement.objects.get(pk=int(reward.value)) except Exception: ach = None if ach: UserAchievement.objects.get_or_create(user=activity_log.user, achievement=ach) reward.claimed = True reward.save() elif reward.type == 'xp': try: xp = int(reward.value) except Exception: xp = activity_log.points_awarded or activity_log.activity.points # simple xp addition: create FocusExperience record FocusExperience.objects.create(user=activity_log.user, points=xp, timestamp=timezone.now()) # adjust FocusMemberProgress if user is part of project's members (best-effort) # This logic is intentionally lightweight: projects/runs are separate. reward.claimed = True reward.save() # emit any signals in signals.py (import there) return activity_log
 @staticmethod
