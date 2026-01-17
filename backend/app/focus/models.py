@@ -21,10 +21,10 @@ class FocusMission(models.Model):
     due_date = models.DateTimeField(null=True, blank=True)
     completed = models.BooleanField(default=False)
 
-class Meta:
+    class Meta:
         ordering = ['-due_date', 'title']
 
-def __str__(self):
+    def __str__(self):
         return f'{self.title} ({self.project.name})'
 
 class FocusMemberProgress(models.Model):
