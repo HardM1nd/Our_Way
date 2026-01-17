@@ -111,3 +111,24 @@ class ActivityTimer(models.Model):
     def __str__(self):
         status = "active" if self.active else "stopped"
         return f'Timer {self.id} by {self.user} ({status})'
+
+from django.conf import settings
+from django.db import models
+
+class Quest(models.Model):
+    DIFFICULTY_CHOICES = [('easy','easy'), ('medium','medium'), ('hard','hard')]
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='easy')
+    xp_reward = models.PositiveIntegerField(default=10)
+    completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='quests')
+    focus_area = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title

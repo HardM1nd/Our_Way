@@ -58,3 +58,64 @@ def start(self, request):
         activity = get_object_or_404(Activity, pk=activity_id)
     timer = ActivityTimer.objects.create(user=request.user, activity=activity)
     return Response(ActivityTimerSerializer(timer).data, status=status.HTTP_201_CREATED)
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.utils import timezone
+from .models import Quest
+from .serializers import QuestSerializer
+
+class QuestViewSet(viewsets.ModelViewSet):
+    queryset = Quest.objects.all()
+    serializer_class = QuestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # пользователи видят только свои задания
+        qs = Quest.objects.filter(user=self.request.user)
+        return qs.order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['post'], url_path='generate')
+    def generate_by_focus(self, request):
+        focus = request.data.get('focus')
+        # простая логика генерации: создаём 3 шаблонных квеста под фокус
+        mapping = {
+            'health': [
+                ('Утренняя пробежка', 'Пробежка 30 минут', 'easy', 20),
+                ('Разминка', 'Разминка 10 минут', 'easy', 10),
+            ],
+            'learning': [
+                ('Чтение', 'Прочитать главу книги', 'medium', 15),
+                ('Практика', 'Решить 5 задач', 'hard', 30),
+            ],
+        }
+        items = mapping.get(focus, [('Задание по фокусу', 'Описание', 'easy', 10)])
+        created = []
+        for title, desc, diff, xp in items:
+            q = Quest.objects.create(title=title, description=desc, difficulty=diff, xp_reward=xp, user=request.user, focus_area=focus)
+            created.append(q)
+        serializer = QuestSerializer(created, many=True)
+        return Response(serializer.data, status=201)
+
+    @action(detail=True, methods=['post'])
+    def complete(self, request, pk=None):
+        quest = self.get_object()
+        if quest.completed:
+            return Response(self.get_serializer(quest).data)
+        quest.completed = True
+        quest.completed_at = timezone.now()
+        quest.save()
+        # начисления очков пользователю — если у User есть поля xp/total_quests_completed, обновим
+        user = request.user
+        if hasattr(user, 'xp'):
+            user.xp = (user.xp or 0) + (quest.xp_reward or 0)
+        if hasattr(user, 'total_quests_completed'):
+            user.total_quests_completed = (user.total_quests_completed or 0) + 1
+        try:
+            user.save()
+        except Exception:
+            pass
+        return Response(self.get_serializer(quest).data)
