@@ -1,8 +1,9 @@
-from django.db import migrations, models 
-from django.conf import settings 
-import django.db.models.deletion 
-import django.utils.timezone
+from django.db import migrations, models
+from django.conf import settings
+import django.db.models.deletion
+
 class Migration(migrations.Migration):
+
     initial = True
 
     dependencies = [
@@ -14,8 +15,8 @@ class Migration(migrations.Migration):
             name='ActivityCategory',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-               ('name', models.CharField(max_length=100, unique=True)),
-               ('slug', models.SlugField(blank=True, max_length=120, unique=True)),
+                ('name', models.CharField(max_length=100, unique=True)),
+                ('slug', models.SlugField(blank=True, max_length=120, unique=True)),
                 ('description', models.TextField(blank=True)),
             ],
             options={
@@ -34,7 +35,7 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('due_date', models.DateTimeField(blank=True, null=True)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='activities', to='app.activities.activitycategory')),
+                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='activities', to='activities.activitycategory')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='activities', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -43,14 +44,14 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='ActivityLog',
-             fields=[
+            fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('notes', models.TextField(blank=True)),
                 ('points_awarded', models.IntegerField(default=0)),
                 ('status', models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed'), ('failed', 'Failed')], default='pending', max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('completed_at', models.DateTimeField(blank=True, null=True)),
-                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='logs', to='app.activities.activity')),
+                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='logs', to='activities.activity')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='activity_logs', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -65,7 +66,7 @@ class Migration(migrations.Migration):
                 ('value', models.CharField(help_text='Value depends on type. For points/xp store integer, for achievement store achievement id or slug.', max_length=255)),
                 ('claimed', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rewards', to='app.activities.activity')),
+                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rewards', to='activities.activity')),
             ],
         ),
         migrations.CreateModel(
@@ -76,7 +77,7 @@ class Migration(migrations.Migration):
                 ('stopped_at', models.DateTimeField(blank=True, null=True)),
                 ('active', models.BooleanField(default=True)),
                 ('duration_seconds', models.PositiveIntegerField(default=0)),
-                ('activity', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='timers', to='app.activities.activity')),
+                ('activity', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='timers', to='activities.activity')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='activity_timers', to=settings.AUTH_USER_MODEL)),
             ],
         ),
