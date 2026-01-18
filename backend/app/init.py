@@ -1,0 +1,1 @@
+""" Root package for the Django project app. """
