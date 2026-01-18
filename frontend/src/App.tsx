@@ -1,6 +1,6 @@
-mport { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { CustomizationProvider } from './contexts/CustomizationContext';
+import { CustomizationProvider } from './contexts/Customization';
 import { PrivateRoute } from './components/layout/PrivateRoute';
 import { Header } from './components/layout/Header';
 import { LoginPage } from './pages/LoginPage';
