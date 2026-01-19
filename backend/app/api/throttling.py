@@ -1,4 +1,10 @@
 from rest_framework.throttling import UserRateThrottle
+<<<<<<< .merge_file_ouR1l0
+class BurstRateThrottle(UserRateThrottle): 
+    scope = 'burst'
+class SustainedRateThrottle(UserRateThrottle): 
+    scope = 'sustained'
+=======
 class BurstRateThrottle(UserRateThrottle): scope = 'burst'
 class SustainedRateThrottle(UserRateThrottle): scope = 'sustained'
 Add corresponding settings in REST_FRAMEWORK if you enable throttling:
@@ -12,4 +18,5 @@ REST_FRAMEWORK = {
 'sustained': '1000/day',
 }
 }
+>>>>>>> .merge_file_FGoaSA
 
